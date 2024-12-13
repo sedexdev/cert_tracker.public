@@ -126,3 +126,5 @@ Image directory hierarchy is up to you as long as the paths you upload are **rel
 13/12/2024 - Uploaded v1.0.0
 
 # License
+
+[M.I.T](https://github.com/sedexdev/cert_tracker/blob/main/LICENSE)
