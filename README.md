@@ -33,6 +33,7 @@ Fork the repo if you are interested in contributing to this project, new suggest
 # Prerequisites
 
 - A system account with administrator privileges
+- <code>git</code> - https://github.com/git-guides/install-git
 - <code>docker</code> - https://docs.docker.com/engine/install/
 - <code>docker compose</code> - https://docs.docker.com/compose/install/
 - <code>wsl2</code> - https://learn.microsoft.com/en-us/windows/wsl/install (Windows only when using Docker Desktop)
