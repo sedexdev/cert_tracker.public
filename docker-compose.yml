@@ -7,7 +7,7 @@ services:
         restart: true
     command: flask run --host=0.0.0.0
     ports:
-      - 5000:5000
+      - 8181:5000
     secrets:
       - postgres-pw
       - secret-key
