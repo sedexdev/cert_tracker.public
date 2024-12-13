@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% from 'macros/resources.html' import create_resource, import_resources with context %}
+
+{% block content %}
+
+<div class="flex flex-col md:flex-row justify-center">
+    <div class="md:mr-16">
+        <img class="h-auto w-48 mx-auto" src="{{ url_for('static', filename='images/data/' ~ cert.badge_img) }}" alt="Cert badge image">
+    </div>
+    <div>
+        <h1 class="border-b-2 border-fuchsia-500 text-2xl tracking-wider font-bold my-8 pb-4">{{ cert.name }} - {{ cert.code }}</h1>
+        <p class="my-4">Uploaded: {{ cert.created }}</p>
+        <div class="flex flex-row my-4">
+            {% for tag in cert.tags.split(',') %}
+            <form action="{{ url_for('certs.search')}}" method="POST">
+                <input class="form-btn dark:form-btn-dark mr-4 py-1 px-2" name="search" id="search" type="submit" value="{{ tag }}">
+            </form>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<nav class="hidden md:block mt-24">
+    <ol id="cert-nav" class="flex justify-evenly text-center">
+        <li id="nav-statistics" class="size-full border-b-4 hover:text-fuchsia-500 cursor-pointer pb-4" onclick="handleNav(this)">Statistics</li>
+        <li id="nav-courses" class="size-full border-b-4 hover:text-fuchsia-500 cursor-pointer pb-4" onclick="handleNav(this)">Courses</li>
+        <li id="nav-videos" class="size-full border-b-4 hover:text-fuchsia-500 cursor-pointer pb-4" onclick="handleNav(this)">Videos</li>
+        <li id="nav-articles" class="size-full border-b-4 hover:text-fuchsia-500 cursor-pointer pb-4" onclick="handleNav(this)">Articles</li>
+        <li id="nav-documentation" class="size-full border-b-4 hover:text-fuchsia-500 cursor-pointer pb-4" onclick="handleNav(this)">Documentation</li>
+    </ol>
+</nav>
+
+<select class="md:hidden bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full mt-8 p-2.5" name="content" id="content" onchange="handleNav(this)">
+    <option value="statistics">Statistics</option>
+    <option value="courses">Courses</option>
+    <option value="videos">Videos</option>
+    <option value="articles">Articles</option>
+    <option value="documentation">Documentation</option>
+</select>
+
+<div class="flex">
+    <p class="hidden w-fit text-lg hover:text-fuchsia-500 cursor-pointer mt-12 mr-4" onclick="displayResourceForm('resource-form')" id="content-btn">+ Add content</p>
+    <p class="hidden w-fit text-lg hover:text-fuchsia-500 cursor-pointer mt-12" onclick="displayResourceForm('resource-import-form')" id="import-btn">+ Import content</p>
+</div>
+
+{{ create_resource(resource_form, og_data) }}
+{{ import_resources(resources) }}
+
+{% block cert_content %} {% endblock %}
+
+{% endblock %}

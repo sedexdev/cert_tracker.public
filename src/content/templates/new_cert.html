@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="my-4 mb-16">
+    <h1 class="text-3xl font-bold tracking-wider">Create new cert</h1>
+</div>
+<form action="{{ url_for('content.create_cert') }}" method="post">
+    {% if failed %}
+    <ul>
+        <li>{{ form.csrf_token }}</li>
+        <li>{{ form.name.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.name(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.name) }}</li>
+        {% if failed == "Name" %}
+            <p class="text-md text-fuchsia-800 dark:text-fuchsia-400 italic mb-4">
+                <span class="text-red-600">*&nbsp;</span>
+                name already exists
+            </p>
+        {%endif %}
+        <li>{{ form.code.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.code(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.code) }}</li>
+        {% if failed == "Code" %}
+            <p class="text-md text-fuchsia-800 dark:text-fuchsia-400 italic mb-4">
+                <span class="text-red-600">*&nbsp;</span>
+                code already exists
+            </p>
+        {%endif %}
+        <li>{{ form.tags.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.tags(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.tags) }}</li>
+        <li>{{ form.head_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.head_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.head_img) }}</li>
+        <li>{{ form.badge_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.badge_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.badge_img) }}</li>
+        <li>{{ form.exam_date.label(class="hidden text-lg my-2") }}</li>
+        <li>{{ form.exam_date(class="hidden input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.exam_date) }}</li>
+    </ul>
+    {% else %}
+    <ul>
+        <li>{{ form.csrf_token }}</li>
+        <li>{{ form.name.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.name(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+        <li>{{ form.code.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.code(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+        <li>{{ form.tags.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.tags(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+        <li>{{ form.head_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.head_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+        <li>{{ form.badge_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
+        <li>{{ form.badge_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+        <li>{{ form.exam_date.label(class="hidden text-lg my-2") }}</li>
+        <li>{{ form.exam_date(class="hidden input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+    </ul>
+    {% endif %}
+    <input class="form-btn dark:form-btn-dark my-8 py-2 px-4" type="submit" value="Create">
+</form>
+
+{% endblock %}

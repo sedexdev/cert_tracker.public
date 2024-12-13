@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="text-center my-4">
+    <h1 class="text-3xl font-bold">Certification Tracking Space</h1>
+</div>
+<img class="h-auto w-32 my-8 mx-auto" src="{{ url_for('static', filename='images/certificate.svg') }}" alt="certificate icon">
+<div class="my-6">
+    <h2 class="text-2xl font-bold">About</h2>
+</div>
+<div class="border-l-4 border-yellow-400 pl-8">
+    <p>
+        This is a simple app that will allow me to list and track certifications I want to study.
+        Certification pages will allow me to have quick links to course content and materials,
+        monitor my progress and flash card creation. I can also include exam dates and send email 
+        reminders to keep myself on track. Features of this app will include:
+    </p>
+    <ul class="ml-16 my-4">
+        <li class="list-disc">Separate certification pages</li>
+        <li class="list-disc">Course links</li>
+        <li class="list-disc">Supporting documentation links</li>
+        <li class="list-disc">Articles and updates</li>
+        <li class="list-disc">Timelines</li>
+        <li class="list-disc">Physical flash card creation tracker</li>
+        <li class="list-disc">Email alerts</li>
+        <li class="list-disc">Exam dates</li>
+    </ul>
+    <p>
+        The hope is that by being organised and having a proper view into what I am studying and how
+        much progress I have made will force me to complete the study material, and hopefully earn
+        a few more certs while I prepare to move into DevOps.
+    </p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,117 @@
+{% from 'macros/no_content.html' import no_content with context %}
+{% from 'macros/cards.html' import course_card, resource_card with context %}
+{% from 'macros/window.html' import window, section_window, reminder_window with context %}
+
+{% macro stats(cert) %}
+    {% if cert.exam_date %}
+        <div class="flex flex-col">
+            <div class="flex">
+                <p class="w-fit text-lg dark:text-slate-100 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 cursor-pointer mb-6 mr-4" onclick="displaySetReminderForm('email-reminder-form')" id="set-reminder-btn">! Set reminder</p>
+                {% if cert.reminder %}
+                    <p class="w-fit text-lg dark:text-slate-100 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 cursor-pointer mb-6" onclick="displayWindow('delete-reminder-{{ cert.id }}')" id="del-reminder-btn">x Delete reminder</p>
+                {% endif %}
+            </div>
+            <div>
+                <div id="exam-date-container" class="flex justify-between size-full bg-gradient-to-tr from-lime-500 to-lime-400 shadow-lg rounded p-8">
+                    <p class="text-white text-xl font-bold">Exam date: {{ cert.exam_date }}{% if cert.reminder %}<span class="text-red-600"> *</span>{% endif %}</p>
+                    <p class="hidden md:block text-2xl h-fit text-slate-800 hover:text-white cursor-pointer" onclick="displayExamForm()">&#x1F589;</p>
+                </div>
+                <div id="exam-date-form" class="hidden"> 
+                    <div class="flex justify-end w-full">
+                        <p class="text-2xl h-fit w-fit text-slate-800 dark:text-slate-100 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 cursor-pointer" onclick="hideExamForm()">&#x2715;</p>
+                    </div>
+                    <form action="{{ url_for('content.update_cert_exam_date') }}" method="post">
+                        <input type="hidden" name="cert_id" value="{{ cert.id }}">
+                        <input class="input-field pr-4" type="date" name="exam-date" id="exam-date">
+                        <button class="form-btn dark:form-btn-dark my-2 p-2" type="submit">Set exam date</button>
+                    </form> 
+                </div>
+            </div>
+        </div>
+        <!-- email reminder form -->
+        <div class="hidden" id="email-reminder-form">
+            <form class="flex flex-col" action="{{ url_for('content.update_cert_exam_reminder') }}" method="post">
+                <div class="flex justify-between w-full">
+                    <p class="text-xl">Set email reminder</p>
+                    <p class="text-2xl h-fit w-fit text-slate-800 dark:text-slate-100 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 cursor-pointer" onclick="hideSetReminderForm('email-reminder-form')">&#x2715;</p>
+                </div>
+                <div class="mt-6">
+                    {{ email_reminder_form.csrf_token }}
+                    <input type="hidden" name="cert_id" value="{{ cert.id }}">
+                    <ul>
+                        <li>{{ email_reminder_form.frequency.label(class="") }}<span class="text-red-600"> *</span></li>
+                        <li>{{ email_reminder_form.frequency(class="input-field dark:text-slate-100 autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] mb-12") }}</li>
+                        <li>{{ email_reminder_form.starting_from.label(class="") }}<span class="text-red-600"> *</span></li>
+                        <li>{{ email_reminder_form.starting_from(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] pr-4") }}</li>
+                    </ul>
+                    <input class="form-btn dark:form-btn-dark my-4 p-2" type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+    {% else %}
+        <div>
+            <form action="{{ url_for('content.update_cert_exam_date') }}" method="post">
+                <input type="hidden" name="cert_id" value="{{ cert.id }}">
+                <input class="input-field pr-4" type="date" name="exam-date" id="exam-date">
+                <button class="form-btn dark:form-btn-dark my-2 p-2" type="submit">Set exam date</button>
+            </form>  
+        </div>
+    {% endif %}
+    <div id="plotly-dash-container" class="h-96 bg-yellow-200 shadow-sm my-8 p-16">
+        <p class="dark:text-slate-800">Plotly Dash graphs will appear here...</p>
+    </div>
+    {{ reminder_window(cert.id) }}
+{% endmacro %}
+    
+{% macro courses(courses, cert_id) %}
+    {% if not courses %}
+        {{ no_content('courses') }}
+    {% else %}
+        {% for course in courses %}
+            {{ course_card(course, section_data) }}
+            {{ window(course.id, "course", cert.id) }}
+            {% for section in section_data %}
+                {% if section.resource_id == course.id %}
+                    {{ section_window(cert.id, course.id, section.id) }}
+                {% endif %}
+            {% endfor %}
+            <br/>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+    
+{% macro videos(videos, cert_id) %}
+    {% if not videos %}
+        {{ no_content('videos') }}
+    {% else %}
+        {% for video in videos %}
+            {{ resource_card(video) }}
+            {{ window(video.id, "video", cert.id) }}
+            <br/>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+    
+{% macro articles(articles, cert_id) %}
+    {% if not articles %}
+        {{ no_content('articles') }}
+    {% else %}
+        {% for article in articles %}
+            {{ resource_card(article) }}
+            {{ window(article.id, "article", cert.id) }}
+            <br/>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+    
+{% macro documentation(documents, cert_id) %}
+    {% if not documents %}
+        {{ no_content('documentation') }}
+    {% else %}
+        {% for document in documents %}
+            {{ resource_card(document) }}
+            {{ window(document.id, "documentation", cert.id) }}
+            <br/>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}

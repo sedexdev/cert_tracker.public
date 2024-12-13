@@ -1,0 +1,78 @@
+---
+name: Lint and Test
+permissions: read-all
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "README.md"
+      - "reports/*.json"
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r src/requirements.txt
+      - name: Lint code
+        run: pylint ./**/*.py
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      FLASK_ENV: testing
+      FLASK_APP: src
+      FLASK_DEBUG: true
+      DATABASE_URL: "sqlite:///cert-tracker-db"
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      API_VERSION: "1"
+    outputs:
+      timestamp: ${{ steps.set-timestamp.outputs.NOW }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r src/requirements.txt
+      - name: Create DB
+        run: sqlite3 cert-tracker-db.db
+      - name: Run app in background
+        run: flask run &
+      - name: Get timestamp
+        id: set-timestamp
+        run: echo "NOW=$(date +'%Y-%m-%dT%H%M%S')" >> $GITHUB_OUTPUT
+      - name: Test code
+        run: coverage run -m pytest -s tests/*.py
+      - name: Create coverage report
+        run: coverage html -d htmlcov_${{ steps.set-timestamp.outputs.NOW }}
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: htmlcov_${{ steps.set-timestamp.outputs.NOW }}
+          path: |
+            htmlcov_${{ steps.set-timestamp.outputs.NOW }}
+  report:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download report
+        uses: actions/download-artifact@v4
+        with:
+          name: htmlcov_${{ needs.test.outputs.timestamp }}

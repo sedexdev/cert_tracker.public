@@ -1,0 +1,59 @@
+{% macro window(resource_id, type, cert_id) %}
+    <!-- confirm resource deletion window -->
+    <div id="window-container-{{ type }}-{{ resource_id }}" class="hidden h-screen w-screen overflow-hidden fixed top-0 right-0 bg-slate-900 opacity-90 z-20">
+        <div class="w-4/5 md:w-2/5 flex flex-col justify-evenly absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-100 dark:text-slate-800 rounded shadow-lg shadow-yellow-500 pl-8 pr-4 py-4">
+            <p class="flex justify-end w-full text-2xl text-slate-500 hover:text-fuchsia-500 cursor-pointer" onclick="hideWindow('window-container-{{ type }}-{{ resource_id }}')">&#x2715;</p>
+            <p class="text-xl font-bold tracking-wide">Confirm deletion of selected {{ type }}</p>
+            <form action="{{ url_for('content.delete', resource_id=resource_id) }}" method="post">
+                <input type="hidden" name="type" value="resource">
+                <input type="hidden" name="cert_id" value="{{ cert_id }}">
+                <input class="form-btn dark:form-btn-dark my-4 p-2" type="submit" value="Confirm">
+            </form>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro cert_window(cert_id) %}
+    <!-- confirm resource deletion window -->
+    <div id="window-container-cert-{{ cert_id }}" class="hidden h-screen w-screen overflow-hidden fixed top-0 right-0 bg-slate-900 opacity-90 z-20">
+        <div class="w-4/5 md:w-2/5 flex flex-col justify-evenly absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-100 dark:text-slate-800 rounded shadow-lg shadow-yellow-500 pl-8 pr-4 py-4">
+            <p class="flex justify-end w-full text-2xl text-slate-500 hover:text-fuchsia-500 cursor-pointer" onclick="hideWindow('window-container-cert-{{ cert_id }}')">&#x2715;</p>
+            <p class="text-xl font-bold tracking-wide">Confirm deletion of selected cert</p>
+            <form action="{{ url_for('content.delete', resource_id=cert_id) }}" method="post">
+                <input type="hidden" name="type" value="cert">
+                <input class="form-btn dark:form-btn-dark my-4 p-2" type="submit" value="Confirm">
+            </form>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro section_window(cert_id, course_id, section_id) %}
+    <!-- confirm resource deletion window -->
+    <div id="window-container-section-{{ course_id }}-{{ section_id }}" class="hidden h-screen w-screen overflow-hidden fixed top-0 right-0 bg-slate-900 opacity-90 z-20">
+        <div class="w-4/5 md:w-2/5 flex flex-col justify-evenly absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-100 dark:text-slate-800 rounded shadow-lg shadow-yellow-500 pl-8 pr-4 py-4">
+            <p class="flex justify-end w-full text-2xl text-slate-500 hover:text-fuchsia-500 cursor-pointer" onclick="hideWindow('window-container-section-{{ course_id }}-{{ section_id }}')">&#x2715;</p>
+            <p class="text-xl font-bold tracking-wide">Confirm deletion of selected section</p>
+            <form action="{{ url_for('content.delete', resource_id=section_id) }}" method="post">
+                <input type="hidden" name="type" value="section">
+                <input type="hidden" name="cert_id" value="{{ cert_id }}">
+                <input class="form-btn dark:form-btn-dark my-4 p-2" type="submit" value="Confirm">
+            </form>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro reminder_window(cert_id) %}
+    <!-- confirm email reminder deletion window -->
+    <div id="delete-reminder-{{ cert_id }}" class="hidden h-screen w-screen overflow-hidden fixed top-0 right-0 bg-slate-900 opacity-90 z-20">
+        <div class="w-4/5 md:w-2/5 flex flex-col justify-evenly absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-100 dark:text-slate-800 rounded shadow-lg shadow-yellow-500 pl-8 pr-4 py-4">
+            <p class="flex justify-end w-full text-2xl text-slate-500 hover:text-fuchsia-500 cursor-pointer" onclick="hideWindow('delete-reminder-{{ cert_id }}')">&#x2715;</p>
+            <p class="text-xl font-bold tracking-wide">Confirm deletion of email reminder</p>
+            <form action="{{ url_for('content.update_cert_exam_reminder') }}" method="post">
+                <input type="hidden" name="cert_id" value="{{ cert_id }}">
+                <input type="hidden" name="starting_from" value="dummy">
+                <input type="hidden" name="delete" value="true">
+                <input class="form-btn dark:form-btn-dark my-4 p-2" type="submit" value="Confirm">
+            </form>
+        </div>
+    </div>
+{% endmacro %}

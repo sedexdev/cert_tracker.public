@@ -1,0 +1,26 @@
+{% extends 'cert_heading.html' %}
+{% from 'macros/data.html' import stats, courses, videos, articles, documentation with context %}
+
+{% block cert_content %}
+
+<div id="statistics" class="hidden my-12">
+    {{ stats(cert) }}
+</div>
+
+<div id="courses" class="hidden my-12">
+    {{ courses(course_data, cert.id) }}
+</div>
+
+<div id="videos" class="hidden my-12">
+    {{ videos(video_data, cert.id) }}
+</div>
+
+<div id="articles" class="hidden my-12">
+    {{ articles(article_data, cert.id) }}
+</div>
+
+<div id="documentation" class="hidden my-12">
+    {{ documentation(document_data, cert.id) }}
+</div>
+
+{% endblock %}

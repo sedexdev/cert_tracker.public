@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% from 'macros/cert_list.html' import list_certs with context %}
+
+{% block content %}
+
+<div class="my-4 mb-16">
+    <h1 class="text-3xl font-bold tracking-wider">Certifications</h1>
+</div>
+{% if not certs %}
+    <p class="text-lg italic text-fuchsia-800 dark:text-fuchsia-400 tracking-wider my-8">Hmm... bit of a ghost town eh?</p>
+{% else %}
+    {{ list_certs(certs) }}
+{% endif %}
+
+{% endblock %}

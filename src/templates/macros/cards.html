@@ -1,0 +1,174 @@
+{% from 'macros/updates.html' import update_resource, update_section with context %}
+
+{% macro section_card(course, section) %}
+     <div id="section-{{ course.id }}-{{ section.number }}" class="flex flex-col md:flex-row dark:text-slate-800 items-center rounded my-4">
+          <div class="flex items-center justify-center size-full h-12 md:h-20 md:w-20 max-md:border-b md:border-r-2 border-slate-300">
+               <p class="text-2xl font-bold italic">{{ section.number }}</p>
+          </div>
+          <div class="flex flex-col size-full md:justify-evenly ml-4 p-4">
+               <div class="flex justify-between w-full h-full">
+                    <p class="text-lg font-bold">{{ section.title }}</p>
+                    <div class="flex">
+                         <p class="text-lg w-fit text-slate-800 hover:text-white cursor-pointer mr-4" onclick="displayUpdateSection(event, '{{ section.id }}', '{{ section.resource_id }}')">&#x1F589;</p>
+                         <p class="text-2xl h-fit text-slate-800 hover:text-white cursor-pointer" onclick="displayWindow('window-container-section-{{ course.id }}-{{ section.id }}')">&#x2715;</p>
+                    </div>
+               </div>
+               <div class="flex justify-between w-full">
+                    <form id="sections-{{ course.id }}-form2" action="{{ url_for('content.update_section') }}" method="post">
+                         <ul>
+                              <li>{{ section_form.csrf_token }}</li>
+                              <input type="hidden" name="section-id" value="{{ section.id }}">
+                              <li>{{ section_form.number(class="hidden", value=section.number) }}</li>
+                              <li>{{ section_form.title(class="hidden", value=section.title) }}</li>
+                              {% if section.cards_made %}
+                                   <li>{{ section_form.cards_made(id="course-" ~ course.id ~ "-section-" ~ section.number ~ "-cards_made", class="section autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", checked="True", onchange="this.form.submit()", onclick="updateSectionColour("~ course.id ~ "," ~ section.number ~ "" ~ ")") }} {{ section_form.cards_made.label(class="text-lg my-2") }}</li>
+                              {% else %}
+                                   <li>{{ section_form.cards_made(id="course-" ~ course.id ~ "-section-" ~ section.number ~ "-cards_made", class="section autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", onchange="this.form.submit()", onclick="updateSectionColour("~ course.id ~ "," ~ section.number ~ "" ~ ")") }} {{ section_form.cards_made.label(class="text-lg my-2") }}</li>
+                              {% endif %}
+                              {% if section.complete %}
+                                   <li>{{ section_form.complete(id="course-" ~ course.id ~ "-section-" ~ section.number ~ "-complete", class="section autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", checked="True", onchange="this.form.submit()", onclick="updateSectionColour("~ course.id ~ "," ~ section.number ~ "" ~ ")") }} {{ section_form.complete.label(class="text-lg my-2") }}</li>
+                              {% else %}
+                                   <li>{{ section_form.complete(id="course-" ~ course.id ~ "-section-" ~ section.number ~ "-complete", class="section autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", onchange="this.form.submit()", onclick="updateSectionColour("~ course.id ~ "," ~ section.number ~ "" ~ ")") }} {{ section_form.complete.label(class="text-lg my-2") }}</li>
+                              {% endif %}
+                         </ul>
+                    </form>
+               </div>
+          </div>
+     </div>
+     {{ update_section(form, section) }}
+{% endmacro %}
+
+{% macro course_card(course, sections) %}
+     <div class="flex flex-col bg-slate-200 border-2 border-slate-300 dark:bg-slate-600 dark:border-slate-700 my-4">
+          <div class="flex max-md:flex-col hover:bg-yellow-300 dark:hover:text-slate-800 transition-all duration-400 ease-in-out cursor-pointer">
+               <div class="flex md:hidden w-full justify-end">
+                    <p class="text-lg w-fit text-slate-500 hover:text-white dark:text-slate-100 dark:hover:text-slate-800 cursor-pointer mb-2 mt-4" onclick="displayUpdateResource(event, '{{ course.id }}', '{{ course.resource_type }}')">&#x1F589;</p>
+                    <p class="text-2xl w-fit text-slate-500 hover:text-white dark:text-slate-100 dark:hover:text-slate-800 cursor-pointer mx-4 mt-4" onclick="displayWindow('window-container-course-{{ course.id }}')">&#x2715;</p>
+               </div>
+               <div class="flex justify-between w-full">
+                    <a href="{{ course.url }}" target="_blank">
+                         <div class="flex flex-col md:flex-row p-4">
+                              <div>
+                                   {% if course.has_og_data %}
+                                        <img class="h-auto w-full md:w-72" src="{{ course.image }}" alt="{{ course.site_name }} resource page">
+                                   {% else %}
+                                        <img class="h-auto w-full md:w-72" src="{{ url_for('static', filename='images/data/' ~ course.image) }}" alt="{{ course.site_name }} resource page">
+                                   {% endif %}
+                              </div>
+                              <div class="flex flex-col justify-evenly my-4 md:my-0 md:ml-8">
+                                   <div class="flex items-center">
+                                        <img class="h-auto w-24 my-4 md:my-0" src="{{ url_for('static', filename='images/data/logos/' ~ course.site_logo) }}" alt="{{ course.site_name }} logo">
+                                        <p class="text-lg font-bold ml-4">{{ course.title }}</p>
+                                   </div>
+                                   <p class="mt-2">{{ course.description }}</p>
+                              </div>
+                         </div>
+                    </a>
+                    <div class="flex">
+                         <p class="hidden md:block text-lg h-fit w-fit text-slate-500 hover:text-white dark:text-slate-900 dark:hover:text-slate-100 cursor-pointer mt-4 p-2" onclick="displayUpdateResource(event, '{{ course.id }}', '{{ course.resource_type }}')">&#x1F589;</p>
+                         <p class="hidden md:block text-2xl h-fit w-fit text-slate-500 hover:text-white dark:text-slate-900 dark:hover:text-slate-100 cursor-pointer mr-4 mt-4 p-2" onclick="displayWindow('window-container-course-{{ course.id }}')">&#x2715;</p>
+                    </div>
+               </div>
+          </div>
+          <div class="flex justify-center border-t-2 border-slate-300 dark:border-slate-700 hover:bg-fuchsia-500 hover:text-white transition-all duration-400 ease-in-out cursor-pointer py-4" onclick="displaySections('{{ course.id }}')">
+               <p class="size-fit mx-2 font-lg font-bold italic">Sections</p>
+               <p class="" id="down-arrow-{{ course.id }}">&#x2B9F;</p>
+               <p class="hidden" id="up-arrow-{{ course.id }}">&#x2B9D;</p>
+          </div>
+          <div class="hidden border-t-2 border-slate-300 dark:border-slate-700 p-4" id="sections-{{ course.id }}">
+               <div class="flex">
+                    <p class="w-fit text-lg hover:text-fuchsia-500 cursor-pointer my-4 mr-4" onclick="displaySectionForm('{{ course.id }}')" id="sections-{{ course.id }}-btn">+ Add Section</p>
+                    <p class="w-fit text-lg hover:text-fuchsia-500 cursor-pointer my-4" onclick="displaySectionJSONForm('{{ course.id }}')" id="sections-{{ course.id }}-import-btn">{} Import JSON</p>
+               </div>
+               <div class="flex justify-end w-full ">
+                    <p class="hidden h-fit w-fit text-xl text-slate-500 hover:text-fuchsia-500 cursor-pointer mr-2 mt-2" id="sections-{{ course.id }}-close-btn" onclick="hideSectionForm('{{ course.id }}')">&#x2715;</p>
+                    <p class="hidden h-fit w-fit text-xl text-slate-500 hover:text-fuchsia-500 cursor-pointer mr-2 mt-2" id="sections-{{ course.id }}-json-close-btn" onclick="hideSectionJSONForm('{{ course.id }}')">&#x2715;</p>
+               </div>
+               <!-- Add single section form -->
+               <div class="my-4">
+                    <form class="hidden" id="sections-{{ course.id }}-form" action="{{ url_for('content.create_section') }}" method="post">
+                         <ul>
+                             <li>{{ section_form.csrf_token }}</li>
+                             <input type="hidden" name="cert_id" value="{{ course.cert_id }}">
+                             <input type="hidden" name="resource_id" value="{{ course.id }}">
+                             <li>{{ section_form.number.label(class="text-lg my-2") }}</li>
+                             <li>{{ section_form.number(id="sections-" ~ course.id ~ "-number", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+                             <li>{{ section_form.title.label(class="text-lg my-2") }}</li>
+                             <li>{{ section_form.title(id="sections-" ~ course.id ~ "-title", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+                         </ul>
+                         <input class="form-btn my-8 py-2 px-4" type="submit" value="Add">
+                    </form>
+               </div>
+               <!-- Import JSON sections form -->
+               <div class="my-4">
+                    <form class="hidden" id="sections-{{ course.id }}-import-form" action="{{ url_for('content.create_section') }}" method="post">
+                         <ul>
+                             <li>{{ section_import_form.csrf_token }}</li>
+                             <input type="hidden" name="cert_id" value="{{ course.cert_id }}">
+                             <input type="hidden" name="resource_id" value="{{ course.id }}">
+                             <li>{{ section_import_form.text_area.label(class="text-lg") }}</li>
+                             <li>{{ section_import_form.text_area(id="sections-" ~ course.id ~ "-json", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)] h-72 text-sm text-sky-200 bg-gradient-to-tr from-slate-800 to-slate-600 font-mono rounded p-6") }}</li>
+                         </ul>
+                         <input class="form-btn my-8 py-2 px-4" type="submit" value="Import">
+                    </form>
+               </div>
+               {% for section in sections|sort(attribute='number') %}
+                    {% if section.resource_id == course.id %}
+                         {{ section_card(course, section) }}
+                    {% endif %}
+               {% endfor %}
+          </div>
+     </div>
+     {{ update_resource(form, course) }}
+{% endmacro %}
+
+{% macro resource_card(resource) %}
+     <div class="flex justify-between hover:bg-yellow-300 transition-all duration-400 ease-in-out bg-slate-200 dark:bg-slate-600 dark:text-slate-100 dark:hover:text-slate-700 hover:shadow-lg hover:shadow-slate-400 dark:hover:shadow-slate-500 cursor-pointer my-4">
+          <div class="flex flex-col">
+               <div class="flex md:hidden w-full justify-end">
+                    <p class="text-lg w-fit text-slate-500 hover:text-white dark:text-slate-900 dark:hover:text-slate-100 cursor-pointer mb-2 mt-4" onclick="displayUpdateResource(event, '{{ resource.id }}', '{{ resource.resource_type }}')">&#x1F589;</p>
+                    <p class="text-2xl w-fit text-slate-500 hover:text-white dark:text-slate-900 dark:hover:text-slate-100 cursor-pointer mx-4 mt-4" onclick="displayWindow('window-container-{{ resource.resource_type }}-{{ resource.id }}')">&#x2715;</p>
+               </div>
+               <a href="{{ resource.url }}" target="_blank">
+                    <div class="flex flex-col md:flex-row p-4">
+                         <div>
+                              {% if resource.has_og_data %}
+                                   <img class="h-auto w-full md:w-72" src="{{ resource.image }}" alt="{{ resource.site_name }} resource page">
+                              {% else %}
+                                   <img class="h-auto w-full md:w-72" src="{{ url_for('static', filename='images/data/' ~ resource.image) }}" alt="{{ resource.site_name }} resource page">
+                              {% endif %}
+                         </div>
+                         <div class="flex flex-col justify-evenly my-4 md:my-0 md:ml-8">
+                              <div class="flex">
+                                   <img class="h-auto w-16 my-4 md:my-0" src="{{ url_for('static', filename='images/data/logos/' ~ resource.site_logo) }}" alt="{{ resource.site_name }} logo">
+                                   <p class="text-lg font-bold my-auto ml-4">{{ resource.title }}</p>
+                              </div>
+                              <p class="mt-2">{{ resource.description }}</p>
+                         </div>
+                    </div>
+               </a>
+          </div>
+          <div class="flex">
+               <p class="hidden md:block text-lg h-fit w-fit text-slate-500 hover:text-white dark:text-slate-900 dark:hover:text-slate-100 cursor-pointer mt-4 p-2" onclick="displayUpdateResource(event, '{{ resource.id }}', '{{ resource.resource_type }}')">&#x1F589;</p>
+               <p class="hidden md:block text-2xl h-fit text-slate-500 hover:text-white dark:text-slate-900 dark:hover:text-slate-100 cursor-pointer mr-4 mt-4 p-2" onclick="displayWindow('window-container-{{ resource.resource_type }}-{{ resource.id }}')">&#x2715;</p>
+          </div>
+     </div>
+     {{ update_resource(form, resource) }}
+{% endmacro %}
+
+{% macro import_card(resource) %}
+     <div class="flex items-center w-full mb-4">
+          <input class="appearance-none w-5 h-5 border rounded-full border-yellow-400 cursor-pointer checked:bg-yellow-400 mr-4" type="checkbox" name="{{ resource.id }}" id="import-resource-{{ resource.id }}">
+          <label class="w-full" for="import-resource-{{ resource.id }}">
+          <div class="flex flex-col bg-slate-200 dark:bg-slate-600 dark:text-slate-100 hover:shadow-lg hover:shadow-slate-400 dark:hover:shadow-slate-500 hover:cursor-pointer my-2 p-4">
+               <div class="flex items-center">
+                    <img class="h-16 w-16 my-4 md:my-0" src="{{ url_for('static', filename='images/data/logos/' ~ resource.site_logo) }}" alt="{{ resource.site_name }} logo">
+                    <div class="flex flex-col ml-4">
+                         <p class="text-lg font-bold my-auto">{{ resource.title }}</p>
+                         <p class="mt-2">{{ resource.description }}</p>
+                    </div>
+               </div>
+          </div>
+          </label>
+     </div>
+ {% endmacro %}

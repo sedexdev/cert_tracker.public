@@ -1,0 +1,49 @@
+services:
+  web:
+    build: ./src
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    command: flask run --host=0.0.0.0
+    ports:
+      - 5000:5000
+    secrets:
+      - postgres-pw
+      - secret-key
+    volumes:
+      - ./src/static/images/data:/home/app/src/static/images/data
+    environment:
+      FLASK_ENV: development
+      FLASK_APP: /home/app/src
+      FLASK_DEBUG: true
+      DATABASE_URL: "postgresql://ct_admin:/run/secrets/postgres-pw@db:5432/cert-tracker-db"
+      SECRET_KEY: /run/secrets/secret-key
+      API_VERSION: "1"
+  db:
+    image: postgres:16.4-bookworm
+    restart: always 
+    ports:
+      - 5432:5432
+    secrets:
+      - postgres-pw
+    environment:
+      POSTGRES_PASSWORD: /run/secrets/postgres-pw
+      POSTGRES_USER: ct_admin
+      POSTGRES_DB: cert-tracker-db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d cert-tracker-db -U ct_admin"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+secrets:
+  secret-key:
+    file: ./secrets/secret.txt
+  postgres-pw:
+    file: ./secrets/postgres-pw.txt
+
+volumes:
+  postgres-data:

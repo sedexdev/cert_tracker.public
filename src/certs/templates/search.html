@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="my-4 mb-16">
+    <h1 class="text-3xl font-bold tracking-wider">Search</h1>
+</div>
+<p>Search for certs</p>
+<br>
+<form class="flex flex-col justify-between" action="{{ url_for('certs.search') }}" method="post">
+    <input class="h-12 text-slate-800 rounded-md placeholder:italic focus:border-2 focus:outline-none focus:border-yellow-400 pl-4" type="text" name="search" id="search" placeholder="Search term">
+    <button class="font-bold form-btn form-btn-dark my-6 p-4" type="submit">Search</button>
+</form>
+{% if message %}
+    <p class="text-lg text-fuchsia-800 italic mb-4">{{ message }}</p>
+{% endif %}
+
+{% endblock %}
