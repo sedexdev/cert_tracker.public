@@ -44,7 +44,7 @@ Clone the repo on to your local machine into a directory of your choice:
 
 <code>git clone https://github.com/sedexdev/cert_tracker.git</code>
 
-**Run these command in the project root** - <code>cert_tracker</code>:
+**Run the following commands in the project root** - <code>cert_tracker</code>
 
 ## Running app containers
 
@@ -79,11 +79,11 @@ Update the 2 .txt files under <code>cert_tracker/secrets</code> for the PostgreS
 - <code>cert_tracker/secrets/postgres-pw.txt</code>
 - <code>cert_tracker/secrets/secret.txt</code>
 
-**NOTE**: You should follow best practice and make these secrets complex, and avoid exposing them in public places.
+**NOTE**: Despite this app runnging locally you should follow best practice and make these secrets complex, and avoid exposing them in public places.
 
-## Images
+## Image files
 
-Image storage is mostly your own choice but their are a few things to consider to make the app look nice and be consistent.
+How images are sourced and stored is mostly your own choice but their are a few things to consider to make the app look nice and be consistent.
 
 - Cert and resource images are relative to the <code>cert_tracker/src/static/images/data</code> directory.
 - Resource logo images are relative to the <code>cert_tracker/src/static/images/data/logos</code> directory.
@@ -97,7 +97,7 @@ The <code>web</code> Docker container bind mounts the volume:
 
 - <code>./src/static/images/data:/home/app/src/static/images/data</code>
 
-This means that images you save on your local machine in the <code>data</code> directory are available inside the container.
+This means that images you save on your local machine in the <code>cert_tracker/src/static/images/data</code> directory are available inside the container.
 
 ### Cert images
 
@@ -106,7 +106,7 @@ My practice is to make a directory under <code>cert_tracker/src/static/images/da
 - <code>head_img</code> - image displayed on the cert card
 - <code>badge_img</code> - cert badge image displayed in the cert dashboard
 
-### Resources images
+### Resource images
 
 When creating a resource on a cert you will be prompted to upload 2 optional images:
 
@@ -115,7 +115,7 @@ When creating a resource on a cert you will be prompted to upload 2 optional ima
 
 ### Open Graph Protocol
 
-Where possible the application will query the URL used to create a <code>resource</code> and try to pull Open Graph data from the URL using the Python package <code>opengraph_py3</code>. When a site has metadata available through the protocol, form fields will auto-populate with images and other available data.
+Where possible the application will query the URL used to create a <code>resource</code> and try to pull Open Graph data from the URL using the Python package <code>opengraph_py3</code>. When a site has metadata available through the protocol, form fields will auto-populate with images and other available information.
 
 ### Suggested workflow with images
 
