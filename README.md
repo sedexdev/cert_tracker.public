@@ -38,20 +38,25 @@ Fork the repo if you are interested in contributing to this project, new suggest
 - <code>docker compose</code> - https://docs.docker.com/compose/install/
 - <code>wsl2</code> - https://learn.microsoft.com/en-us/windows/wsl/install (Windows only when using Docker Desktop)
 
-# Running the application
+# Getting started 
 
 Clone the repo on to your local machine into a directory of your choice:
 
 <code>git clone https://github.com/sedexdev/cert_tracker.git</code>
 
-In the project root - <code>cert_tracker</code> - run the Docker containers using <code>docker compose</code>:
+**Run these command in the project root** - <code>cert_tracker</code>:
 
-Mac/Linux: <code>sudo docker compose up -d</code></br>
-Windows: <code>docker compose up -d</code> (from admin prompt)
+## Running app containers
 
-## App URL
+- Mac/Linux: <code>sudo docker compose up -d</code></br>
+- Windows: <code>docker compose up -d</code> (from admin prompt)
 
 In your browser navigate to http://127.0.0.1:8181 to view the application once built.
+
+## Stopping app containers
+
+- Mac/Linux: <code>sudo docker compose stop</code></br>
+- Windows: <code>docker compose stop</code> (from admin prompt)
 
 ## Teardown
 
