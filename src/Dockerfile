@@ -17,12 +17,10 @@ WORKDIR /home/app/src
 # copy project
 COPY --chown=app:app . .
 
-# init npm and install TailwindCSS
-# initialise package.json and Tailwind CSS
+# minify Tailwind CSS
 RUN npm init -y \
-    && npm install autoprefixer postcss tailwindcss --save-dev \
+    && npm i \
     && npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify
-
 
 #######################
 ## BUILD PYTHON SLIM ##
