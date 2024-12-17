@@ -26,7 +26,7 @@
             </p>
         {%endif %}
         <li>{{ form.tags.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
-        <li>{{ form.tags(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.tags) }}</li>
+        <li>{{ form.tags(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", placeholder="tag1, tag2, tag3, etc", value=data.tags) }}</li>
         <li>{{ form.head_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
         <li>{{ form.head_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.head_img) }}</li>
         <li>{{ form.badge_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
@@ -42,7 +42,7 @@
         <li>{{ form.code.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
         <li>{{ form.code(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
         <li>{{ form.tags.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
-        <li>{{ form.tags(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+        <li>{{ form.tags(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", placeholder="tag1, tag2, tag3, etc") }}</li>
         <li>{{ form.head_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
         <li>{{ form.head_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
         <li>{{ form.badge_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
