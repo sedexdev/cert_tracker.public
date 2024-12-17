@@ -129,7 +129,7 @@ Image directory hierarchy is up to you as long as the paths you upload are **rel
 
 # Change log
 
-17/12/2024 - BUG FIX - MODULE_NOT_FOUND error during <code>npm</code> setup in <code>cert_tracker/src/Dockerfile</code> [d657a0c](https://github.com/sedexdev/cert_tracker/commit/d657a0ce10e4e38b8623ef92b95b3df77a1ba2da)
+17/12/2024 - BUG FIX - MODULE_NOT_FOUND error during <code>npm</code> setup in <code>Dockerfile</code> [d657a0c](https://github.com/sedexdev/cert_tracker/commit/d657a0ce10e4e38b8623ef92b95b3df77a1ba2da)</br>
 13/12/2024 - Uploaded v1.0.0
 
 # License
