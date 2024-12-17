@@ -1,6 +1,9 @@
 # data file
 email/data.json
 
+# node files
+src/node_modules/
+
 # Byte-compiled / optimized / DLL files
 /**/__pycache__/
 *.py[cod]
