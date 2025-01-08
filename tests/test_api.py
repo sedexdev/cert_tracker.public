@@ -5,6 +5,7 @@ API operations test module
 # pylint: disable=duplicate-code, line-too-long, too-many-public-methods
 
 import json
+import os
 
 # import pytest
 import requests
@@ -17,10 +18,9 @@ from src.models.resource import Resource
 from src.models.section import Section
 
 
-class TestCerts:
+class TestAPI:
     """
-    Cert creation and management test class. Includes case for
-    all composite classes of Cert (Video/Article/Course etc)
+    API testing class
     """
 
     @classmethod
@@ -28,7 +28,7 @@ class TestCerts:
         """
         Setup class before all tests run
         """
-        cls.api_url = "http://127.0.0.1:5000/api/v1"
+        cls.api_url = f"http://127.0.0.1:5000/api/v{os.environ["API_VERSION"]}"
         cls.cert_data_1 = None
         cls.cert_data_2 = None
         cls.resource_data_1 = None

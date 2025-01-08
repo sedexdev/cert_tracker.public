@@ -12,8 +12,9 @@ services:
       - postgres-pw
       - secret-key
     volumes:
-      - ./src/static/images/data:/home/app/src/static/images/data
+      - image-uploads:/home/app/src/static/images/data
     environment:
+      TESTING: "False"
       FLASK_ENV: development
       FLASK_APP: /home/app/src
       FLASK_DEBUG: true
@@ -47,3 +48,4 @@ secrets:
 
 volumes:
   postgres-data:
+  image-uploads:

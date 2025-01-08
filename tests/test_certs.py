@@ -2,7 +2,7 @@
 Cert operations test module
 """
 
-# pylint: disable=duplicate-code, line-too-long, too-many-public-methods
+# pylint: disable=duplicate-code, line-too-long, too-many-public-methods, consider-using-with
 
 from flask import Flask
 from flask.testing import FlaskClient
@@ -13,8 +13,7 @@ from src.models.cert import Cert
 
 class TestCerts:
     """
-    Cert creation and management test class. Includes case for 
-    all composite classes of Cert (Video/Article/Course etc) 
+    Cert creation and management test class
     """
 
     @classmethod
@@ -33,9 +32,9 @@ class TestCerts:
             "name": "Test",
             "code": "tst-101",
             "date": "01/01/2000",
-            "head_img": "test/test.jpg",
-            "badge_img": "etest/BADGE_test.png",
-            "exam_date": "",
+            "head_img": "tests/images/test.jpg",
+            "badge_img": "tests/images/BADGE_test.png",
+            "exam_date": None,
             "tags": "test_tag",
         }
 
@@ -49,6 +48,7 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
+        # create cert
         client.post("/create/cert", data=self.form_data)
         with app.app_context():
             result = Cert.find("tst-101")
@@ -62,6 +62,7 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
+        # create cert
         client.post("/create/cert", data=self.form_data)
         with app.app_context():
             db.session.commit()
@@ -76,6 +77,7 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
+        # create cert
         client.post("/create/cert", data=self.form_data)
         with app.app_context():
             db.session.commit()
@@ -92,6 +94,7 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
+        # create cert
         client.post("/create/cert", data=self.form_data)
         with app.app_context():
             cert = Cert.query.filter_by(name=self.form_data["name"]).first()
@@ -104,6 +107,7 @@ class TestCerts:
         Args:
             client (FlaskClient): Flask app test client
         """
+        # create cert
         response = client.post("/create/cert", data=self.form_data)
         assert response.status_code == 302
 

@@ -5,7 +5,7 @@
 <div class="my-4 mb-16">
     <h1 class="text-3xl font-bold tracking-wider">Create new cert</h1>
 </div>
-<form action="{{ url_for('content.create_cert') }}" method="post">
+<form action="{{ url_for('content.create_cert') }}" method="post" enctype="multipart/form-data">
     {% if failed %}
     <ul>
         <li>{{ form.csrf_token }}</li>
@@ -27,12 +27,10 @@
         {%endif %}
         <li>{{ form.tags.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
         <li>{{ form.tags(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", placeholder="tag1, tag2, tag3, etc", value=data.tags) }}</li>
-        <li>{{ form.head_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
-        <li>{{ form.head_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.head_img) }}</li>
-        <li>{{ form.badge_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
-        <li>{{ form.badge_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.badge_img) }}</li>
-        <li>{{ form.exam_date.label(class="hidden text-lg my-2") }}</li>
-        <li>{{ form.exam_date(class="hidden input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=data.exam_date) }}</li>
+        <li>{{ form.head_img.label(class="text-lg my-2") }}</li>
+        <li>{{ form.head_img(class="my-2 cursor-pointer") }}</li>
+        <li>{{ form.badge_img.label(class="text-lg my-2") }}</li>
+        <li>{{ form.badge_img(class="my-2 cursor-pointer") }}</li>
     </ul>
     {% else %}
     <ul>
@@ -43,12 +41,10 @@
         <li>{{ form.code(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
         <li>{{ form.tags.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
         <li>{{ form.tags(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", placeholder="tag1, tag2, tag3, etc") }}</li>
-        <li>{{ form.head_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
-        <li>{{ form.head_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
-        <li>{{ form.badge_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
-        <li>{{ form.badge_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
-        <li>{{ form.exam_date.label(class="hidden text-lg my-2") }}</li>
-        <li>{{ form.exam_date(class="hidden input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+        <li>{{ form.head_img.label(class="text-lg my-2") }}</li>
+        <li>{{ form.head_img(class="my-2 cursor-pointer") }}</li>
+        <li>{{ form.badge_img.label(class="text-lg my-2") }}</li>
+        <li>{{ form.badge_img(class="my-2 cursor-pointer") }}</li>
     </ul>
     {% endif %}
     <input class="form-btn dark:form-btn-dark my-8 py-2 px-4" type="submit" value="Create">

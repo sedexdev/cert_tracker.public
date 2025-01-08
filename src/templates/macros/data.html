@@ -68,11 +68,11 @@
         {{ no_content('courses') }}
     {% else %}
         {% for course in courses %}
-            {{ course_card(course, section_data) }}
-            {{ window(course.id, "course", cert.id) }}
+            {{ course_card(course, section_data, cert_id) }}
+            {{ window(course.id, "course", cert_id) }}
             {% for section in section_data %}
                 {% if section.resource_id == course.id %}
-                    {{ section_window(cert.id, course.id, section.id) }}
+                    {{ section_window(cert_id, course.id, section.id) }}
                 {% endif %}
             {% endfor %}
             <br/>
@@ -85,8 +85,8 @@
         {{ no_content('videos') }}
     {% else %}
         {% for video in videos %}
-            {{ resource_card(video) }}
-            {{ window(video.id, "video", cert.id) }}
+            {{ resource_card(video, cert_id) }}
+            {{ window(video.id, "video", cert_id) }}
             <br/>
         {% endfor %}
     {% endif %}
@@ -97,8 +97,8 @@
         {{ no_content('articles') }}
     {% else %}
         {% for article in articles %}
-            {{ resource_card(article) }}
-            {{ window(article.id, "article", cert.id) }}
+            {{ resource_card(article, cert_id) }}
+            {{ window(article.id, "article", cert_id) }}
             <br/>
         {% endfor %}
     {% endif %}
@@ -109,8 +109,8 @@
         {{ no_content('documentation') }}
     {% else %}
         {% for document in documents %}
-            {{ resource_card(document) }}
-            {{ window(document.id, "documentation", cert.id) }}
+            {{ resource_card(document, cert_id) }}
+            {{ window(document.id, "documentation", cert_id) }}
             <br/>
         {% endfor %}
     {% endif %}

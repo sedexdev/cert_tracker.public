@@ -64,7 +64,7 @@ def post_cert() -> Response:
         code=data["code"],
         head_img=data["head_img"],
         badge_img=data["badge_img"],
-        exam_date=data["exam_date"],
+        exam_date=None,
         reminder=False,
         tags=data["tags"],
         created=datetime.now().strftime("%d/%m/%Y"),
@@ -98,9 +98,12 @@ def put_cert(cert_id: int) -> Response:
     data = request.get_json()
     cert.name = data["name"]
     cert.code = data["code"]
-    cert.head_img = data["head_img"]
-    cert.badge_img = data["badge_img"]
-    cert.exam_date = data["exam_date"]
+    if data.get("head_img"):
+        cert.head_img = data["head_img"]
+    if data.get("badge_img"):
+        cert.badge_img = data["badge_img"]
+    if data.get("exam_date") is not None:
+        cert.exam_date = data["exam_date"]
     if data.get("reminder") is not None:
         cert.reminder = data["reminder"]
     cert.tags = data["tags"]
@@ -176,8 +179,8 @@ def post_resource() -> Response:
     """
     data = request.get_json()
     # add default images if none provided
-    image = data["image"] if data["image"] else "default_image.jpg"
-    logo = data["site_logo"] if data["site_logo"] else "default_logo.png"
+    image = data["image"] if data.get("image") else "default_image.jpg"
+    logo = data["site_logo"] if data.get("site_logo") else "default_logo.png"
     resource = Resource(
         cert_id=data["cert_id"],
         resource_type=data["resource_type"],
@@ -218,8 +221,8 @@ def put_resource(resource_id: int) -> Response:
             "status": 404,
         })
     # add default images if none provided
-    image = data["image"] if data["image"] else "default_image.jpg"
-    logo = data["site_logo"] if data["site_logo"] else "default_logo.png"
+    image = data["image"] if data.get("image") else "default_image.jpg"
+    logo = data["site_logo"] if data.get("site_logo") else "default_logo.png"
     resource.resource_type = data["resource_type"]
     resource.url = data["url"]
     resource.title = data["title"]

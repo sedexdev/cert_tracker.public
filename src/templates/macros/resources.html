@@ -1,7 +1,7 @@
 {% from 'macros/cards.html' import import_card with context %}
 
 {% macro create_resource(resource_form, og_data) %}
-    <form class="hidden mt-12" id="resource-form" action="{{ url_for('content.create_resource') }}" method="post">
+    <form class="hidden mt-12" id="resource-form" action="{{ url_for('content.create_resource') }}" method="post" enctype="multipart/form-data">
         <ul>
             <li>{{ resource_form.csrf_token }}</li>
             {% if og_data %}
@@ -29,26 +29,30 @@
                 <li>{{ resource_form.url(id="resource-url", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", onblur="this.form.submit();", value=og_data[0].url) }}</li>
                 <li>{{ resource_form.title.label(for="resource-title", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                 <li>{{ resource_form.title(id="resource-title", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=og_data[0].title) }}</li>
-                <li>{{ resource_form.image.label(for="resource-image", class="text-lg my-2") }}</li>
-                <li>{{ resource_form.image(id="resource-image", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=og_data[0].image) }}</li>
                 <li>{{ resource_form.description.label(for="resource-description", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                 <li>{{ resource_form.description(id="resource-description", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=og_data[0].description) }}</li>
                 <li>{{ resource_form.site_name.label(for="resource-site-name", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                 <li>{{ resource_form.site_name(id="resource-site-name", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=og_data[0].site_name) }}</li>
+                <li>{{ resource_form.image.label(for="resource-image", class="text-lg my-2") }}</li>
+                {% if og_data[0].image %}
+                    <input id="resource-image" class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]" type="text" name="image" value="{{ og_data[0].image }}">
+                {% else %}
+                    <li>{{ resource_form.image(id="resource-image", class="my-2 cursor-pointer") }}</li>
+                {% endif %}
             {% else %}
                 <li>{{ resource_form.url.label(for="resource-url", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                 <li>{{ resource_form.url(id="resource-url", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", onblur="this.form.submit(); updateResourceFormState('true');") }}</li>
                 <li>{{ resource_form.title.label(for="resource-title", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                 <li>{{ resource_form.title(id="resource-title", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
-                <li>{{ resource_form.image.label(for="resource-image", class="text-lg my-2") }}</li>
-                <li>{{ resource_form.image(id="resource-image", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
                 <li>{{ resource_form.description.label(for="resource-description", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                 <li>{{ resource_form.description(id="resource-description", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
                 <li>{{ resource_form.site_name.label(for="resource-site-name", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                 <li>{{ resource_form.site_name(id="resource-site-name", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+                <li>{{ resource_form.image.label(for="resource-image", class="text-lg my-2") }}</li>
+                <li>{{ resource_form.image(id="resource-image", class="my-2 cursor-pointer") }}</li>
             {% endif %}
             <li>{{ resource_form.site_logo.label(for="resource-site-image", class="text-lg my-2") }}</li>
-            <li>{{ resource_form.site_logo(id="resource-site-image", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]") }}</li>
+            <li>{{ resource_form.site_logo(id="resource-site-image", class="my-2 cursor-pointer") }}</li>
         </ul>
         <input class="form-btn dark:form-btn-dark my-8 py-2 px-4" type="submit" value="Add" onclick="updateResourceFormState('false')"> 
     </form>

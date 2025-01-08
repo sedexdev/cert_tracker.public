@@ -3,6 +3,7 @@ Form module for new cert creation
 """
 
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileField
 from wtforms import BooleanField, DateField, RadioField, StringField, TextAreaField, validators
 
 
@@ -13,15 +14,21 @@ class CertForm(FlaskForm):
     name = StringField("Name", validators=[validators.DataRequired()])
     code = StringField("Code", validators=[validators.DataRequired()])
     tags = StringField("Tags", validators=[validators.DataRequired()])
-    head_img = StringField(
-        "Image path",
-        validators=[validators.DataRequired()]
+    head_img = FileField(
+        "Image",
+        validators=[FileAllowed(
+            ["jpg", "jpeg", "png", "svg"],
+            "Image uploads only (jpg, jpeg, png, svg)"
+        )]
     )
-    badge_img = StringField(
-        "Badge path",
-        validators=[validators.DataRequired()]
+    badge_img = FileField(
+        "Badge",
+        validators=[FileAllowed(
+            ["jpg", "jpeg", "png", "svg"],
+            "Image uploads only (jpg, jpeg, png, svg)"
+        )]
     )
-    exam_date = StringField("Exam date")
+    # exam_date = StringField("Exam date")
 
 
 class ResourceForm(FlaskForm):
@@ -37,15 +44,27 @@ class ResourceForm(FlaskForm):
     )
     url = StringField("URL", validators=[validators.DataRequired()])
     title = StringField("Title", validators=[validators.DataRequired()])
-    image = StringField("Image")
+    site_name = StringField(
+        "Site name",
+        validators=[validators.DataRequired()]
+    )
     description = StringField(
         "Description",
         validators=[validators.DataRequired()]
     )
-    site_logo = StringField("Site logo")
-    site_name = StringField(
-        "Site name",
-        validators=[validators.DataRequired()]
+    image = FileField(
+        "Image",
+        validators=[FileAllowed(
+            ["jpg", "jpeg", "png", "svg"],
+            "Image uploads only (jpg, jpeg, png, svg)"
+        )]
+    )
+    site_logo = FileField(
+        "Site logo",
+        validators=[FileAllowed(
+            ["jpg", "jpeg", "png", "svg"],
+            "Image uploads only (jpg, jpeg, png, svg)"
+        )]
     )
 
 

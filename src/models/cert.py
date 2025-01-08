@@ -4,14 +4,17 @@ Module creating the Cert model
 
 # pylint: disable=too-many-instance-attributes
 
-from dataclasses import dataclass
 import os
+
+from dataclasses import dataclass
 
 import requests
 
 from src.db import db
 from src.models.resource import Resource
 from src.models.section import Section
+
+from src.util.image import remove_images
 
 API_URL = f"http://127.0.0.1:5000/api/v{os.environ["API_VERSION"]}"
 
@@ -99,6 +102,8 @@ class Cert(db.Model):
         Args:
             cert_id (int): Cert ID
         """
+        # remove cert images
+        remove_images(cert_id)
         # delete sections
         sections = Section.query.filter_by(cert_id=cert_id).all()
         for section in sections:

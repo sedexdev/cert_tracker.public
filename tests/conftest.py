@@ -25,10 +25,8 @@ def app():
         Flask: app instance
     """
     application = create_app()
-    application.config.update({
-        "TESTING": True,
-        "WTF_CSRF_ENABLED": False,
-    })
+    application.config["TESTING"] = "True"
+    application.config["WTF_CSRF_ENABLED"] = False
     yield application
 
 

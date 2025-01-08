@@ -9,7 +9,7 @@
                 <p class="text-2xl w-fit text-slate-800 dark:text-slate-100 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 cursor-pointer pt-4 mr-4" onclick="hideUpdateCert('{{ cert.id }}')">&#x2715;</p>
             </div>
         </div>
-        <form action="{{ url_for('content.update_cert', cert_id=cert.id) }}" method="post">
+        <form action="{{ url_for('content.update_cert', cert_id=cert.id) }}" method="post" enctype="multipart/form-data">
             <ul>
                 <li>{{ form.csrf_token }}</li>
                 <li>{{ form.name.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
@@ -18,10 +18,10 @@
                 <li>{{ form.code(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=cert.code) }}</li>
                 <li>{{ form.tags.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                 <li>{{ form.tags(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=cert.tags) }}</li>
-                <li>{{ form.head_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
-                <li>{{ form.head_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=cert.head_img) }}</li>
-                <li>{{ form.badge_img.label(class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
-                <li>{{ form.badge_img(class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=cert.badge_img) }}</li>
+                <li>{{ form.head_img.label(class="text-lg my-2") }}</li>
+                <li>{{ form.head_img(class="my-2 cursor-pointer") }}</li>
+                <li>{{ form.badge_img.label(class="text-lg my-2") }}</li>
+                <li>{{ form.badge_img(class="my-2 cursor-pointer") }}</li>
             </ul>
             <input class="form-btn dark:form-btn-dark my-8 py-2 px-4" type="submit" value="Update">
         </form>
@@ -29,16 +29,17 @@
     </div>
 {% endmacro %}
 
-{% macro update_resource(form, resource) %}
+{% macro update_resource(form, resource, cert_id) %}
     <div id="resource-update-form-{{ resource.id }}" class="hidden">
         <span class="block w-full h-4 border-b-4 border-fuchsia-500 m-auto my-12"></span>
             <div class="flex justify-between">
                 <h2 class="text-2xl font-bold tracking-wider">Update {{ resource.title }}</h2>
                 <p class="text-xl hover:text-fuchsia-500 cursor-pointer" onclick="hideUpdateResource('{{ resource.id }}')">&#x2715;</p>
             </div>    
-            <form class="mt-12" action="{{ url_for('content.update_resource', resource_id=resource.id) }}" method="post">
+            <form class="mt-12" action="{{ url_for('content.update_resource', resource_id=resource.id) }}" method="post" enctype="multipart/form-data">
                 <ul>
                     <li>{{ resource_form.csrf_token }}</li>
+                    <input type="hidden" name="cert_id" value="{{ cert_id }}">
                     <div class="flex justify-between">
                         <li>{{ resource_form.resource_type.label }}<span class="text-red-600"> *</span></li>
                     </div>
@@ -59,14 +60,14 @@
                     <li>{{ resource_form.url(id="resource-url", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=resource.url) }}</li>
                     <li>{{ resource_form.title.label(for="resource-title", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                     <li>{{ resource_form.title(id="resource-title", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=resource.title) }}</li>
-                    <li>{{ resource_form.image.label(for="resource-image", class="text-lg my-2") }}</li>
-                    <li>{{ resource_form.image(id="resource-image", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=resource.image) }}</li>
                     <li>{{ resource_form.description.label(for="resource-description", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                     <li>{{ resource_form.description(id="resource-description", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=resource.description) }}</li>
                     <li>{{ resource_form.site_name.label(for="resource-site-name", class="text-lg my-2") }}<span class="text-red-600"> *</span></li>
                     <li>{{ resource_form.site_name(id="resource-site-name", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=resource.site_name) }}</li>
+                    <li>{{ resource_form.image.label(for="resource-image", class="text-lg my-2") }}</li>
+                    <li>{{ resource_form.image(id="resource-image", class="my-2 cursor-pointer") }}</li>
                     <li>{{ resource_form.site_logo.label(for="resource-site-image", class="text-lg my-2") }}</li>
-                    <li>{{ resource_form.site_logo(id="resource-site-image", class="input-field autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]", value=resource.site_logo) }}</li>
+                    <li>{{ resource_form.site_logo(id="resource-site-image", class="my-2 cursor-pointer") }}</li>
                 </ul>
                 <input class="form-btn dark:form-btn-dark my-8 py-2 px-4" type="submit" value="Update" onclick="updateResourceFormState('false')"> 
             </form>

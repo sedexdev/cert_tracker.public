@@ -2,14 +2,19 @@
 Content operations test module
 """
 
-# pylint: disable=duplicate-code, line-too-long, too-many-public-methods
+# pylint: disable=duplicate-code, line-too-long, too-many-public-methods, consider-using-with, too-many-lines
 
 import json
 import os
 
+from io import BytesIO
+from pathlib import Path
+
 import requests
 
+from flask import Flask
 from flask.testing import FlaskClient
+from werkzeug.datastructures import FileStorage
 
 API_URL = f"http://127.0.0.1:5000/api/v{os.environ["API_VERSION"]}"
 
@@ -20,11 +25,12 @@ PROJECT_ROOT = os.path.abspath(
     )
 )
 
+LOGO_PATH = Path(f"{PROJECT_ROOT}/src/static/images/data/logos")
 
-class TestCerts:
+
+class TestContent:
     """
-    Cert creation and management test class. Includes case for
-    all composite classes of Cert (Video/Article/Course etc)
+    Content creation and management testing class
     """
 
     @classmethod
@@ -47,9 +53,9 @@ class TestCerts:
             "name": "Test",
             "code": "tst-101",
             "date": "01/01/2000",
-            "head_img": "test/test.jpg",
-            "badge_img": "test/BADGE_test.png",
-            "exam_date": "",
+            "head_img": "tests/images/test.jpg",
+            "badge_img": "tests/images/BADGE_test.png",
+            "exam_date": None,
             "reminder": False,
             "cost": None,
             "tags": "test",
@@ -60,10 +66,10 @@ class TestCerts:
             "resource_type": "course",
             "url": "http://test.test",
             "title": "Test Course",
-            "image": "test/test.png",
             "description": "This is a test course",
-            "site_logo": "test.svg",
             "site_name": "Test",
+            "image": "tests/images/test.jpg",
+            "site_logo": "tests/images/BADGE_test.png",
             "has_og_data": False,
             "complete": False,
         }
@@ -113,6 +119,14 @@ class TestCerts:
                 file.seek(0)
                 file.truncate()
                 file.write(json.dumps(data))
+        # clean up test images if created
+        test_badge = Path(os.path.join(
+            LOGO_PATH, "tests_images_BADGE_test.png"))
+        test_site_logo = Path(os.path.join(LOGO_PATH, "site_logo.jpg"))
+        if test_badge.exists():
+            os.remove(test_badge)
+        if test_site_logo.exists():
+            os.remove(test_site_logo)
 
     # ===== /create/cert =====
 
@@ -153,36 +167,45 @@ class TestCerts:
         Args:
             client (FlaskClient): Flask app test client
         """
+        # create mock file uploads for images
+        head_img = open(f"{self.cert_data['head_img']}", 'rb')
+        self.cert_data["head_img"] = FileStorage(head_img)
         # create a cert
-        requests.post(
-            url=f"{API_URL}/cert",
-            data=json.dumps(self.cert_data),
-            headers={"Content-Type": "application/json"},
-            timeout=2
-        )
+        client.post("/create/cert", data=self.cert_data)
+        head_img.close()
         # update the cert
         self.cert_data["name"] = "Updated test"
-        self.cert_data["head_img"] = "test/updated_test.jpg"
+        badge_img = open(f"{self.cert_data['badge_img']}", 'rb')
+        self.cert_data["head_img"] = FileStorage(badge_img)
         client.post("/update/cert/1", data=self.cert_data)
+        badge_img.close()
         # get the cert data
         response = requests.get(f"{API_URL}/cert/1", timeout=2)
         data = response.json()
         # assert updates were saved
         assert \
             data["name"] == "Updated test" and \
-            data["head_img"] == "test/updated_test.jpg"
+            data["head_img"] == "tst101/tests_images_BADGE_test.png"
 
     def test_update_cert_returns_404(self, client: FlaskClient) -> None:
         """
-        Asserts that a 404 response is returned if Cert no found
+        Asserts that a 404 response is returned if Cert not found
 
         Args:
             client (FlaskClient): Flask app test client
         """
+        # create mock file uploads for images
+        head_img = open(f"{self.cert_data['head_img']}", 'rb')
+        self.cert_data["head_img"] = FileStorage(head_img)
+        badge_img = open(f"{self.cert_data['badge_img']}", 'rb')
+        self.cert_data["badge_img"] = FileStorage(badge_img)
         # update a cert that doesn't exist
         self.cert_data["name"] = "Updated test"
-        self.cert_data["head_img"] = "test/updated_test.jpg"
         client.post("/update/cert/1", data=self.cert_data)
+        # close file handlers
+        head_img.close()
+        badge_img.close()
+        # test for error response
         with client.session_transaction() as session:
             flashes = session.get("_flashes")
         assert ("error", "Cert not found") in flashes
@@ -197,7 +220,17 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
+        # create cert for testing against
+        client.post("/create/cert", data=self.cert_data)
+        # create mock file uploads for images
+        image = open(f"{self.resource_data['image']}", 'rb')
+        self.resource_data["image"] = FileStorage(image)
+        site_logo = open(f"{self.resource_data['site_logo']}", 'rb')
+        self.resource_data["site_logo"] = FileStorage(site_logo)
         client.post("/create/resource", data=self.resource_data)
+        # close file handlers
+        image.close()
+        site_logo.close()
         response = requests.get(f"{API_URL}/resource/1", timeout=2)
         data = response.json()
         assert data["title"] == "Test Course"
@@ -210,8 +243,19 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
+        # create cert for testing against
+        client.post("/create/cert", data=self.cert_data)
+        # create mock file uploads for images
+        image = open(f"{self.resource_data['image']}", 'rb')
+        self.resource_data["image"] = FileStorage(image)
+        site_logo = open(f"{self.resource_data['site_logo']}", 'rb')
+        self.resource_data["site_logo"] = FileStorage(site_logo)
         self.resource_data["resource_type"] = "article"
         client.post("/create/resource", data=self.resource_data)
+        # close file handlers
+        image.close()
+        site_logo.close()
+        # test resource was created
         response = requests.get(f"{API_URL}/resource/1", timeout=2)
         data = response.json()
         assert data["resource_type"] == "article"
@@ -224,8 +268,19 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
+        # create cert for testing against
+        client.post("/create/cert", data=self.cert_data)
+        # create mock file uploads for images
+        image = open(f"{self.resource_data['image']}", 'rb')
+        self.resource_data["image"] = FileStorage(image)
+        site_logo = open(f"{self.resource_data['site_logo']}", 'rb')
+        self.resource_data["site_logo"] = FileStorage(site_logo)
         self.resource_data["has_og_data"] = True
         client.post("/create/resource", data=self.resource_data)
+        # close file handlers
+        image.close()
+        site_logo.close()
+        # test resource was created
         response = requests.get(f"{API_URL}/resource/1", timeout=2)
         data = response.json()
         assert data["has_og_data"]
@@ -239,8 +294,36 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
+        # create cert for testing against
+        client.post("/create/cert", data=self.cert_data)
+        # read file contents into memory
+        with open(f"{self.resource_data['image']}", 'rb') as image_file:
+            image_content = image_file.read()
+        with open(f"{self.resource_data['site_logo']}", 'rb') as site_logo_file:
+            site_logo_content = site_logo_file.read()
+        # create mock file uploads for images
+        self.resource_data["image"] = FileStorage(
+            BytesIO(image_content),
+            filename="image.jpg"
+        )
+        self.resource_data["site_logo"] = FileStorage(
+            BytesIO(site_logo_content),
+            filename="site_logo.jpg"
+        )
+        # first request
+        client.post("/create/resource", data=self.resource_data)
+        # create new mock file uploads for images for the second request
+        self.resource_data["image"] = FileStorage(
+            BytesIO(image_content),
+            filename="image.jpg"
+        )
+        self.resource_data["site_logo"] = FileStorage(
+            BytesIO(site_logo_content),
+            filename="site_logo.jpg"
+        )
+        # second request
         response = client.post("/create/resource", data=self.resource_data)
-        response = client.post("/create/resource", data=self.resource_data)
+        # test for error messages
         with client.session_transaction() as session:
             flashes = session.get("_flashes")
         assert \
@@ -256,8 +339,34 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
-        response = client.post("/create/resource", data=self.resource_data)
-        # update title to force check for URL
+        # create cert for testing against
+        client.post("/create/cert", data=self.cert_data)
+        # read file contents into memory
+        with open(f"{self.resource_data['image']}", 'rb') as image_file:
+            image_content = image_file.read()
+        with open(f"{self.resource_data['site_logo']}", 'rb') as site_logo_file:
+            site_logo_content = site_logo_file.read()
+        # create mock file uploads for images
+        self.resource_data["image"] = FileStorage(
+            BytesIO(image_content),
+            filename="image.jpg"
+        )
+        self.resource_data["site_logo"] = FileStorage(
+            BytesIO(site_logo_content),
+            filename="site_logo.jpg"
+        )
+        # first request
+        client.post("/create/resource", data=self.resource_data)
+        # create new mock file uploads for images for the second request
+        self.resource_data["image"] = FileStorage(
+            BytesIO(image_content),
+            filename="image.jpg"
+        )
+        self.resource_data["site_logo"] = FileStorage(
+            BytesIO(site_logo_content),
+            filename="site_logo.jpg"
+        )
+        # second request - update title to force check for URL
         self.resource_data["title"] = "Another test course"
         response = client.post("/create/resource", data=self.resource_data)
         with client.session_transaction() as session:
@@ -274,8 +383,36 @@ class TestCerts:
             app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
+        # create cert for testing against
+        client.post("/create/cert", data=self.cert_data)
+        # update resource type for both requests
         self.resource_data["resource_type"] = "article"
+        # read file contents into memory
+        with open(f"{self.resource_data['image']}", 'rb') as image_file:
+            image_content = image_file.read()
+        with open(f"{self.resource_data['site_logo']}", 'rb') as site_logo_file:
+            site_logo_content = site_logo_file.read()
+        # create mock file uploads for images
+        self.resource_data["image"] = FileStorage(
+            BytesIO(image_content),
+            filename="image.jpg"
+        )
+        self.resource_data["site_logo"] = FileStorage(
+            BytesIO(site_logo_content),
+            filename="site_logo.jpg"
+        )
+        # first request
         client.post("/create/resource", data=self.resource_data)
+        # create new mock file uploads for images for the second request
+        self.resource_data["image"] = FileStorage(
+            BytesIO(image_content),
+            filename="image.jpg"
+        )
+        self.resource_data["site_logo"] = FileStorage(
+            BytesIO(site_logo_content),
+            filename="site_logo.jpg"
+        )
+        # second request
         client.post("/create/resource", data=self.resource_data)
         with client.session_transaction() as session:
             flashes = session.get("_flashes")
@@ -402,6 +539,8 @@ class TestCerts:
         Args:
             client (FlaskClient): Flask app test client
         """
+        # create cert for testing against
+        client.post("/create/cert", data=self.cert_data)
         # create a resource
         requests.post(
             url=f"{API_URL}/resource",
@@ -411,15 +550,12 @@ class TestCerts:
         )
         # update the resource
         self.resource_data["title"] = "Updated test"
-        self.resource_data["image"] = "test/updated_test.jpg"
         client.post("/update/resource/1", data=self.resource_data)
         # get the resource data
         response = requests.get(f"{API_URL}/resource/1", timeout=2)
         data = response.json()
         # assert updates were saved
-        assert \
-            data["title"] == "Updated test" and \
-            data["image"] == "test/updated_test.jpg"
+        assert data["title"] == "Updated test"
 
     # ===== /create/section =====
 
@@ -604,13 +740,18 @@ class TestCerts:
             client (FlaskClient): Flask app test client
         """
         # create cert as required for reminder details
-        self.cert_data["exam_date"] = "01/01/2000"
         requests.post(
             url=f"{API_URL}/cert",
             data=json.dumps(self.cert_data),
             headers={"Content-Type": "application/json"},
             timeout=2
         )
+        # update the exam date
+        client.post("/update/cert/exam_date", data={
+            "cert_id": 1,
+            "exam-date": "01/01/2025",
+        })
+        # set reminder
         form_data = {
             "cert_id": 1,
             "frequency": "weekly",
@@ -633,13 +774,17 @@ class TestCerts:
             client (FlaskClient): Flask app test client
         """
         # create cert as required for reminder details
-        self.cert_data["exam_date"] = "01/01/2000"
         requests.post(
             url=f"{API_URL}/cert",
             data=json.dumps(self.cert_data),
             headers={"Content-Type": "application/json"},
             timeout=2
         )
+        # update the exam date
+        client.post("/update/cert/exam_date", data={
+            "cert_id": 1,
+            "exam-date": "01/01/2025",
+        })
         # add the cert
         form_data = {
             "cert_id": 1,
@@ -778,7 +923,7 @@ class TestCerts:
 
     # ===== /delete/<int:resource_id> =====
 
-    def test_content_delete_cert(self, client: FlaskClient) -> None:
+    def test_content_delete_cert(self, app: Flask, client: FlaskClient) -> None:
         """
         Assert a Cert object is successfully delete from the DB
 
@@ -794,7 +939,8 @@ class TestCerts:
             timeout=2
         )
         # delete the cert
-        response = client.post("/delete/1", data={"type": "cert"})
+        with app.app_context():
+            response = client.post("/delete/1", data={"type": "cert"})
         # assert delete error message flashed
         with client.session_transaction() as session:
             flashes = session.get("_flashes")
@@ -802,7 +948,7 @@ class TestCerts:
             response.status_code == 302 and \
             ("message", "Cert deleted successfully") in flashes
 
-    def test_content_delete_cert_and_all_resources(self, client: FlaskClient) -> None:
+    def test_content_delete_cert_and_all_resources(self, app: Flask, client: FlaskClient) -> None:
         """
         Assert a Cert object is successfully delete from the DB along
         with any resources with the same cert_id
@@ -833,7 +979,8 @@ class TestCerts:
             timeout=2
         )
         # delete the cert
-        response = client.post("/delete/1", data={"type": "cert"})
+        with app.app_context():
+            response = client.post("/delete/1", data={"type": "cert"})
         # get the associated resources
         resources = requests.get(url=f"{API_URL}/resource", timeout=2)
         sections = requests.get(url=f"{API_URL}/section", timeout=2)
@@ -853,7 +1000,6 @@ class TestCerts:
         Assert a Resource object is successfully delete from the DB
 
         Args:
-            app (Flask): Flask app instance
             client (FlaskClient): Flask app test client
         """
         # create a resource
