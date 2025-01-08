@@ -35,6 +35,7 @@ jobs:
       FLASK_DEBUG: true
       DATABASE_URL: "sqlite:///cert-tracker-db"
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      TESTING: true
       API_VERSION: "1"
     outputs:
       timestamp: ${{ steps.set-timestamp.outputs.NOW }}
