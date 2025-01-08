@@ -85,8 +85,6 @@ Update the 2 .txt files under <code>cert_tracker/secrets</code> for the PostgreS
 
 Where possible the application will query the URL used to create a <code>resource</code> and try to pull Open Graph data from the URL using the Python package <code>opengraph_py3</code>. When a site has metadata available through the protocol, form fields will auto-populate with images and other available information.
 
-Image directory hierarchy is up to you as long as the paths you upload are **relative to the default image directories** mentioned at the start of this section. Default images are provided for resource creation.
-
 # Email reminder configuration
 
 **In Progress**
