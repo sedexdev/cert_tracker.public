@@ -81,45 +81,9 @@ Update the 2 .txt files under <code>cert_tracker/secrets</code> for the PostgreS
 
 **NOTE**: Despite this app runnging locally you should follow best practice and make these secrets complex, and avoid exposing them in public places.
 
-## Image files
-
-How images are sourced and stored is mostly your own choice but their are a few things to consider to make the app look nice and be consistent.
-
-- Cert and resource images are relative to the <code>cert_tracker/src/static/images/data</code> directory.
-- Resource logo images are relative to the <code>cert_tracker/src/static/images/data/logos</code> directory.
-
-When using the app you will be prompted to upload images when:
-
-- creating new certs
-- creating new resources on existing certs
-
-The <code>web</code> Docker container bind mounts the volume:
-
-- <code>./src/static/images/data:/home/app/src/static/images/data</code>
-
-This means that images you save on your local machine in the <code>cert_tracker/src/static/images/data</code> directory are available inside the container.
-
-### Cert images
-
-My practice is to make a directory under <code>cert_tracker/src/static/images/data</code> for each cert I create e.g. <code>cert_tracker/src/static/images/data/lpic1</code>. In there I save all image files appropriate to the cert. The cert creation form asks for 2 images:
-
-- <code>head_img</code> - image displayed on the cert card
-- <code>badge_img</code> - cert badge image displayed in the cert dashboard
-
-### Resource images
-
-When creating a resource on a cert you will be prompted to upload 2 optional images:
-
-- <code>image</code> - image displayed on the resource card
-- <code>site_logo</code> - the logo of the site the resource is located at (e.g. YouTube)
-
-### Open Graph Protocol
+# Open Graph Protocol
 
 Where possible the application will query the URL used to create a <code>resource</code> and try to pull Open Graph data from the URL using the Python package <code>opengraph_py3</code>. When a site has metadata available through the protocol, form fields will auto-populate with images and other available information.
-
-### Suggested workflow with images
-
-When creating a cert I will do a Google search for the cert and save a head image and badge appropriate for that certification. When creating a resource I will screenshot the site it came from and use that as the <code>image</code>, I will then look for a <code>.svg</code> file of the site logo an use that for the <code>site_logo</code>.
 
 Image directory hierarchy is up to you as long as the paths you upload are **relative to the default image directories** mentioned at the start of this section. Default images are provided for resource creation.
 
@@ -129,6 +93,7 @@ Image directory hierarchy is up to you as long as the paths you upload are **rel
 
 # Change log
 
+08/01/2025 - Uploaded v1.1.0 - Image file uploads [5db06a0](https://github.com/sedexdev/cert_tracker/commit/396b4aa80e8df66e1919d6c81675f06155db06a0)
 17/12/2024 - BUG FIX - MODULE_NOT_FOUND error during <code>npm</code> setup in <code>Dockerfile</code> [d657a0c](https://github.com/sedexdev/cert_tracker/commit/d657a0ce10e4e38b8623ef92b95b3df77a1ba2da)</br>
 13/12/2024 - Uploaded v1.0.0
 
