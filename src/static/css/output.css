@@ -1337,6 +1337,11 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
+.text-yellow-400 {
+  --tw-text-opacity: 1;
+  color: rgb(250 204 21 / var(--tw-text-opacity, 1));
+}
+
 .opacity-90 {
   opacity: 0.9;
 }
@@ -1440,8 +1445,19 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.hover\:shadow-md:hover {
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .hover\:shadow-slate-400:hover {
   --tw-shadow-color: #94a3b8;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.hover\:shadow-slate-600:hover {
+  --tw-shadow-color: #475569;
   --tw-shadow: var(--tw-shadow-colored);
 }
 
@@ -1655,9 +1671,19 @@ video {
   color: rgb(15 23 42 / var(--tw-text-opacity, 1));
 }
 
+.dark\:text-yellow-400:where(.dark, .dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(250 204 21 / var(--tw-text-opacity, 1));
+}
+
 .dark\:hover\:text-fuchsia-400:hover:where(.dark, .dark *) {
   --tw-text-opacity: 1;
   color: rgb(232 121 249 / var(--tw-text-opacity, 1));
+}
+
+.dark\:hover\:text-fuchsia-500:hover:where(.dark, .dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(217 70 239 / var(--tw-text-opacity, 1));
 }
 
 .dark\:hover\:text-slate-100:hover:where(.dark, .dark *) {
