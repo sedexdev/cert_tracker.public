@@ -25,7 +25,7 @@ New features under development include:
 - Plotly Dash graphical analysis dashboard to see your progress
 - Cost analysis to see your cert spending
 - In-app WYSIWYG text editor and file tree for managing notes
-- An area for storing links to you practice exams
+- An area for storing links to your practice exams
 - Digital flash cards
 
 Fork the repo if you are interested in contributing to this project, new suggestions are very welcome as well as code contributions.
