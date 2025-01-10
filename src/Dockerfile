@@ -26,7 +26,7 @@ RUN npm init -y \
 ## BUILD PYTHON SLIM ##
 #######################
 
-FROM python:3.12-slim-bookworm
+FROM python:3.14.0a3-slim-bookworm
 
 # update the image
 RUN apt update
