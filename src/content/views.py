@@ -31,6 +31,11 @@ content_bp = Blueprint(
 API_URL = f"http://127.0.0.1:5000/api/v{os.environ["API_VERSION"]}"
 
 
+###########################
+##### CERT OPERATIONS #####
+###########################
+
+
 @content_bp.route("/create/cert", methods=["GET", "POST"])
 def create_cert() -> Response:
     """
@@ -243,6 +248,11 @@ def update_cert_exam_reminder() -> Response:
         return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
 
 
+###############################
+##### RESOURCE OPERATIONS #####
+###############################
+
+
 @content_bp.route("/create/resource", methods=["POST"])
 def create_resource() -> None:
     """
@@ -433,6 +443,11 @@ def update_resource_complete() -> Response:
     return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
 
 
+##############################
+##### SECTION OPERATIONS #####
+##############################
+
+
 @content_bp.route("/create/section", methods=["POST"])
 def create_section() -> None:
     """
@@ -524,6 +539,11 @@ def update_section() -> Response:
             flash("Section updated successfully", "message")
             return redirect(url_for("data.cert_data", cert_id=section_data["cert_id"]), 302)
         return Response(status=204)
+
+
+#############################
+##### DELETE OPERATIONS #####
+#############################
 
 
 @ content_bp.route("/delete/<int:resource_id>", methods=["POST"])
