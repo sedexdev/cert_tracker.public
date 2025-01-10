@@ -2,8 +2,6 @@
 User created routes for new certs
 """
 
-# pylint: disable=line-too-long, too-many-locals
-
 import json
 import os
 

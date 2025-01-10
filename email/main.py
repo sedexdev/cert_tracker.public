@@ -5,14 +5,13 @@ Script for testing sending email using
 smtplib and GMail
 """
 
-# pylint: disable=broad-exception-caught, line-too-long
-
 import datetime
 import json
 import os
 import smtplib
 
 from email.mime.text import MIMEText
+from smtplib import SMTPConnectError, SMTPHeloError, SMTPAuthenticationError
 
 CERT_CODE = os.environ["CERT_CODE"]
 
@@ -44,36 +43,41 @@ EXAM_DATE = f"{day}-{month}-{year}"
 
 BODY = f"""
 <html>
-    <body style="padding: 0; margin: 0;">
-        <table align="center" width="90%" style="font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; text-align: center;">
-            <tr>
-                <td>
-                    <p style="font-size: 48px; font-weight: bold; color: rgb(233, 198, 0); padding: 0;">Cert Tracker</p>
-                </td>
-            </tr>
-            <tr>
-                <td style="font-size: 24px; padding: 0 0 30px 0;">
-                    Your {cert_name} - {cert_code} exam is booked for
-                    <span style="color: darkcyan;">{EXAM_DATE}</span>
-                </td>
-            </tr>
-            <tr>
-                <td bgcolor="#32CD32" style="color: white; font-size: 20px; padding: 20px;">
-                    <table width="100%">
-                        <tr>
-                            <td align="center" style="padding: 25px;">You have</td>
-                        </tr>
-                        <tr>
-                            <td align="center" style="font-size: 40px; font-weight: bold; padding: 10px;">{days.days}</td>
-                        </tr>
-                        <tr>
-                            <td align="center" style="padding: 25px;">days to go!</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </body>
+<body style="padding: 0; margin: 0;">
+<table
+    align="center"
+    width="90%"
+    style="font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; text-align: center;">
+<tr>
+<td>
+    <p style="font-size: 48px; font-weight: bold; color: rgb(233, 198, 0); padding: 0;">Cert Tracker</p>
+</td>
+</tr>
+<tr>
+<td style="font-size: 24px; padding: 0 0 30px 0;">
+    Your {cert_name} - {cert_code} exam is booked for
+    <span style="color: darkcyan;">{EXAM_DATE}</span>
+</td>
+</tr>
+<tr>
+<td bgcolor="#32CD32" style="color: white; font-size: 20px; padding: 20px;">
+<table width="100%">
+<tr>
+    <td align="center" style="padding: 25px;">You have</td>
+</tr>
+<tr>
+    <td
+        align="center"
+        style="font-size: 40px; font-weight: bold; padding: 10px;">{days.days}</td>
+</tr>
+<tr>
+    <td align="center" style="padding: 25px;">days to go!</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
 </html>
 """
 
@@ -90,5 +94,9 @@ try:
         server.login(SENDER, PASSWORD)
         server.sendmail(SENDER, RECIPIENT, html.as_string())
         print("Message sent successfully :)")
-except Exception as e:
-    print(f"Failed to send email: {e}")
+except SMTPHeloError as e:
+    print(f"[EHLO] Failed to send email: {e}")
+except SMTPConnectError as e:
+    print(f"[CONNECT] Failed to send email: {e}")
+except SMTPAuthenticationError as e:
+    print(f"[AUTH] Failed to send email: {e}")

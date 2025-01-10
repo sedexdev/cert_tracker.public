@@ -2,8 +2,6 @@
 View module for new cert creation
 """
 
-# pylint: disable=inconsistent-return-statements
-
 import datetime
 import json
 import os
@@ -110,7 +108,7 @@ def update_cert(cert_id: int) -> Response:
         Response: Flask Response object
     """
     form = CertForm()
-    if request.method == "POST" and form.validate_on_submit():
+    if form.validate_on_submit():
         # create cert data object
         cert_data = {
             "name": form.data["name"],
@@ -193,59 +191,58 @@ def update_cert_exam_reminder() -> Response:
     """
     cert_id = request.form["cert_id"]
     starting_from = request.form.get("starting_from")
-    if request.method == "POST":
-        # catch empty date
-        if not starting_from:
-            flash("Please provide a valid date", "error")
+    # catch empty date
+    if not starting_from:
+        flash("Please provide a valid date", "error")
+        return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
+    # get the cert data from the API
+    response = requests.get(f"{API_URL}/cert/{cert_id}", timeout=2)
+    data = response.json()
+    # read correct data file
+    if request.form.get("testing"):
+        data_file = f"{PROJECT_ROOT}/tests/test_data.json"
+    else:
+        data_file = f"{PROJECT_ROOT}/email/data.json"
+    # format values
+    cert_code = data["code"].lower().replace("-", "")
+    date_parts = data["exam_date"].split("/")
+    date_parts.reverse()
+    cert_exam_date = "-".join(date_parts)
+    # check for delete op
+    if request.form.get("delete"):
+        deleted = delete_exam_reminder(data_file, cert_code)
+        if not deleted:
+            flash("Email reminder not set", "error")
             return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
-        # get the cert data from the API
-        response = requests.get(f"{API_URL}/cert/{cert_id}", timeout=2)
-        data = response.json()
-        # read correct data file
-        if request.form.get("testing"):
-            data_file = f"{PROJECT_ROOT}/tests/test_data.json"
-        else:
-            data_file = f"{PROJECT_ROOT}/email/data.json"
-        # format values
-        cert_code = data["code"].lower().replace("-", "")
-        date_parts = data["exam_date"].split("/")
-        date_parts.reverse()
-        cert_exam_date = "-".join(date_parts)
-        # check for delete op
-        if request.form.get("delete"):
-            deleted = delete_exam_reminder(data_file, cert_code)
-            if not deleted:
-                flash("Email reminder not set", "error")
-                return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
-            # update the reminder field
-            data["reminder"] = False
-            requests.put(
-                f"{API_URL}/cert/{cert_id}",
-                data=json.dumps(data),
-                headers={"Content-Type": "application/json"},
-                timeout=2,
-            )
-            flash("Email reminder deleted", "message")
-            return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
-        # create cert object and update the appropriate file
-        create_exam_reminder(data_file, cert_code, {
-            "created": datetime.date.today().strftime("%d-%m-%Y"),
-            "name": data["name"],
-            "code": data["code"],
-            "examDate": cert_exam_date,
-            "frequency": request.form["frequency"],
-            "starting_from": starting_from
-        })
         # update the reminder field
-        data["reminder"] = True
+        data["reminder"] = False
         requests.put(
             f"{API_URL}/cert/{cert_id}",
             data=json.dumps(data),
             headers={"Content-Type": "application/json"},
             timeout=2,
         )
-        flash("Email reminder set", "message")
+        flash("Email reminder deleted", "message")
         return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
+    # create cert object and update the appropriate file
+    create_exam_reminder(data_file, cert_code, {
+        "created": datetime.date.today().strftime("%d-%m-%Y"),
+        "name": data["name"],
+        "code": data["code"],
+        "examDate": cert_exam_date,
+        "frequency": request.form["frequency"],
+        "starting_from": starting_from
+    })
+    # update the reminder field
+    data["reminder"] = True
+    requests.put(
+        f"{API_URL}/cert/{cert_id}",
+        data=json.dumps(data),
+        headers={"Content-Type": "application/json"},
+        timeout=2,
+    )
+    flash("Email reminder set", "message")
+    return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
 
 
 ###############################
@@ -260,7 +257,7 @@ def create_resource() -> None:
     """
     form = ResourceForm()
     cert_id = request.form["cert_id"]
-    if request.method == "POST" and form.validate_on_submit():
+    if form.validate_on_submit():
         failed_constraint = Resource.exists(
             cert_id,
             form.title.data,
@@ -325,32 +322,31 @@ def import_resource() -> Response:
         Response: Flask Response object
     """
     cert_id = request.form["cert_id"]
-    if request.method == "POST":
-        # get the IDs of the selected resources
-        resources = []
-        for value in request.form:
-            if value != "cert_id":
-                resources.append(value)
-        # flash error if no resources selected
-        if not resources:
-            flash("No resources selected for import", "error")
-            return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
-        # get resources and create new entries with the new cert ID
-        for resource_id in resources:
-            response = requests.get(
-                f"{API_URL}/resource/{resource_id}",
-                timeout=2
-            )
-            data = response.json()
-            data["cert_id"] = cert_id
-            requests.post(
-                f"{API_URL}/resource",
-                data=json.dumps(data),
-                headers={"Content-Type": "application/json"},
-                timeout=2
-            )
-        flash("Resources imported successfully", "message")
+    # get the IDs of the selected resources
+    resources = []
+    for value in request.form:
+        if value != "cert_id":
+            resources.append(value)
+    # flash error if no resources selected
+    if not resources:
+        flash("No resources selected for import", "error")
         return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
+    # get resources and create new entries with the new cert ID
+    for resource_id in resources:
+        response = requests.get(
+            f"{API_URL}/resource/{resource_id}",
+            timeout=2
+        )
+        data = response.json()
+        data["cert_id"] = cert_id
+        requests.post(
+            f"{API_URL}/resource",
+            data=json.dumps(data),
+            headers={"Content-Type": "application/json"},
+            timeout=2
+        )
+    flash("Resources imported successfully", "message")
+    return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
 
 
 @content_bp.route("/update/resource/<int:resource_id>", methods=["POST"])
@@ -372,7 +368,7 @@ def update_resource(resource_id: int) -> Response:
         timeout=2
     )
     db_data = response.json()
-    if request.method == "POST" and form.validate_on_submit():
+    if form.validate_on_submit():
         # fetch cert code for image uploads
         response = requests.get(url=f"{API_URL}/cert/{cert_id}", timeout=2)
         data = response.json()
@@ -410,6 +406,7 @@ def update_resource(resource_id: int) -> Response:
         else:
             flash(f"{data["message"]}", "error")
         return redirect(url_for("data.cert_data", cert_id=db_data["cert_id"]), 302)
+    return Response(status=204)
 
 
 @content_bp.route("/update/resource/complete", methods=["POST"])
@@ -448,6 +445,31 @@ def update_resource_complete() -> Response:
 ##############################
 
 
+def has_import_errors(sections: list) -> bool:
+    """
+    Handles errors that may occur during the import
+    of sections from a JSON file
+
+    Args:
+        sections (list): list of section objects
+
+    Returns:
+        bool: True if errors found, False otherwise
+    """
+    if not isinstance(sections, list):
+        flash("List of 'sections' not found", "error")
+        return True
+    # check all list objects have the correct fields
+    for section in sections:
+        if len(section) != 2:
+            flash("Invalid number of section fields found", "error")
+            return True
+        if "number" not in section or "title" not in section:
+            flash("Incorrect section fields found", "error")
+            return True
+    return False
+
+
 @content_bp.route("/create/section", methods=["POST"])
 def create_section() -> None:
     """
@@ -457,22 +479,14 @@ def create_section() -> None:
     cert_id = request.form["cert_id"]
     import_form = SectionImportForm()
     # handle JSON import option first
-    if request.method == "POST" and import_form.validate_on_submit():
+    if import_form.validate_on_submit():
         try:
             data = json.loads(import_form.text_area.data)
             # check sections list exists
             sections = data.get("sections", None)
-            if not isinstance(sections, list):
-                flash("List of 'sections' not found", "error")
+            # handle errors
+            if has_import_errors(sections):
                 return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
-            # check all list objects have the correct fields
-            for section in sections:
-                if len(section) != 2:
-                    flash("Invalid number of section fields found", "error")
-                    return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
-                if "number" not in section or "title" not in section:
-                    flash("Incorrect section fields found", "error")
-                    return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
             # if all tests pass create each section
             for section in sections:
                 data = {
@@ -494,7 +508,7 @@ def create_section() -> None:
             return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
     # handle single section upload
     form = SectionForm()
-    if request.method == "POST" and form.validate_on_submit():
+    if form.validate_on_submit():
         resource_data = {
             "cert_id": cert_id,
             "resource_id": request.form["resource_id"],
@@ -512,6 +526,7 @@ def create_section() -> None:
         else:
             flash("Crate section failed", "message")
         return redirect(url_for('data.cert_data', cert_id=cert_id), 302)
+    return Response(status=204)
 
 
 @content_bp.route("/update/section", methods=["POST"])
@@ -520,7 +535,7 @@ def update_section() -> Response:
     Updates a section
     """
     form = SectionForm()
-    if request.method == "POST" and form.validate_on_submit():
+    if form.validate_on_submit():
         section_id = request.form["section-id"]
         section = requests.get(f"{API_URL}/section/{section_id}", timeout=2)
         section_data = section.json()
@@ -539,6 +554,7 @@ def update_section() -> Response:
             flash("Section updated successfully", "message")
             return redirect(url_for("data.cert_data", cert_id=section_data["cert_id"]), 302)
         return Response(status=204)
+    return Response(status=204)
 
 
 #############################
@@ -558,18 +574,17 @@ def delete(resource_id: int) -> Response:
     Returns:
         Response: Flask Response object
     """
-    if request.method == "POST":
-        resource_type = request.form["type"]
-        if resource_type == "cert":
-            response = Cert.delete(resource_id)
-        elif resource_type == "section":
-            response = Section.delete(resource_id)
-        else:
-            response = Resource.delete(resource_id)
-        flash(
-            f"{response["message"]}",
-            "message" if response["status"] == 200 else "error"
-        )
-        if resource_type == "cert":
-            return redirect(url_for("certs.certs"), 302)
-        return redirect(url_for('data.cert_data', cert_id=request.form["cert_id"]), 302)
+    resource_type = request.form["type"]
+    if resource_type == "cert":
+        response = Cert.delete(resource_id)
+    elif resource_type == "section":
+        response = Section.delete(resource_id)
+    else:
+        response = Resource.delete(resource_id)
+    flash(
+        f"{response["message"]}",
+        "message" if response["status"] == 200 else "error"
+    )
+    if resource_type == "cert":
+        return redirect(url_for("certs.certs"), 302)
+    return redirect(url_for('data.cert_data', cert_id=request.form["cert_id"]), 302)

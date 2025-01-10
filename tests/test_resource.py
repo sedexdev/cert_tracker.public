@@ -408,8 +408,8 @@ class TestResource:
             headers={"Content-Type": "application/json"},
             timeout=2
         )
-        self.cert_data["name"] = "Test2"
-        self.cert_data["code"] = "tst-102"
+        self.cert_data["name"] = "Test cert"
+        self.cert_data["code"] = "tst-104"
         requests.post(
             f"{API_URL}/cert",
             data=json.dumps(self.cert_data),

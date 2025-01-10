@@ -1,0 +1,4 @@
+[DESIGN]
+# Maximum number of attributes for a class (see R0902).
+max-attributes=15
+max-public-methods=25

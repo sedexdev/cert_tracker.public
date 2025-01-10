@@ -2,12 +2,11 @@
 API operations test module
 """
 
-# pylint: disable=duplicate-code, line-too-long, too-many-public-methods
+# pylint: disable=duplicate-code
 
 import json
 import os
 
-# import pytest
 import requests
 
 from flask import Flask

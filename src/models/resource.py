@@ -2,8 +2,6 @@
 Module creating the Resource model
 """
 
-# pylint: disable=too-many-instance-attributes
-
 import os
 
 from dataclasses import dataclass
